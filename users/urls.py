@@ -10,5 +10,6 @@ from .views import (
 urlpatterns = [
     path('register/', RegistrationView.as_view(), name='register'),
     path('login/', obtain_auth_token, name='login'),
-    path('jsprofile/<int:pk>/', JobSeekerProfileView.as_view(), name='jsprofile')
+    path('jsprofile/<int:pk>/', JobSeekerProfileView.as_view(), name='jsprofile'),
+
 ]   

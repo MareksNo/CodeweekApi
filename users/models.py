@@ -13,13 +13,13 @@ from django.conf import settings
 from rest_framework.authtoken.models import Token
 
 class CustomAccountManager(BaseUserManager):
-    def create_user(self, email, username, password, **other_fields):
+    def create_user(self, email, password, **other_fields):
         if not email:
             raise ValueError(gettext_lazy('You must provide an email address'))
 
 
         email = self.normalize_email(email)
-        user = self.model(email=email, username=username, **other_fields)
+        user = self.model(email=email, **other_fields)
 
         user.set_password(password)
         user.save()
@@ -27,7 +27,7 @@ class CustomAccountManager(BaseUserManager):
         return user
     
 
-    def create_superuser(self, email, username, password, **other_fields):
+    def create_superuser(self, email, password, **other_fields):
         other_fields.setdefault('is_staff', True)
         other_fields.setdefault('is_superuser', True)
         other_fields.setdefault('is_active', True)
@@ -40,13 +40,12 @@ class CustomAccountManager(BaseUserManager):
             raise ValueError(
                 'Superuser must be assigned to is_superuser=True'
             )
-        return self.create_user(email, username, password, **other_fields)
+        return self.create_user(email, password, **other_fields)
 
 
 
 class UserModel(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(gettext_lazy('email address'), unique=True)
-    username = models.CharField(max_length=150, unique=True)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
 
@@ -57,12 +56,12 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True) # Can be used for email validation 
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'is_employer']
+    REQUIRED_FIELDS = ['is_employer']
 
     objects = CustomAccountManager()
 
     def __str__(self):
-        return self.username
+        return f'{self.first_name} {self.last_name}'
 
 
 class JobSeekerProfile(models.Model):
@@ -78,7 +77,7 @@ class JobSeekerProfile(models.Model):
     extra = models.TextField(max_length=3000, default='', blank=True)
 
     def __str__(self):
-        return f'{self.user.username}\'s JobSeeker profile'
+        return f'{self.user.first_name} {self.user.last_name}\'s JobSeeker profile'
 
     @receiver(post_save, sender=UserModel)
     def create_user_profile(sender, instance, created, **kwargs):
