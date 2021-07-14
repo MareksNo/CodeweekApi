@@ -13,10 +13,10 @@ class RegistrationView(APIView):
             user = serializer.save()
             data['response'] = 'New user registered successfully!'
             data['email'] = user.email
-            data['username'] = user.username
             data['is_employer'] = user.is_employer
             data['last_name'] = user.last_name
             data['first_name'] = user.first_name
+            data['id'] = user.id
 
             token = Token.objects.get(user=user)
             data['token'] = token.key
