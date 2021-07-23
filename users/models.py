@@ -12,6 +12,8 @@ from django.dispatch import receiver
 from django.conf import settings
 from rest_framework.authtoken.models import Token
 
+from core.models import Occupation
+
 class CustomAccountManager(BaseUserManager):
     def create_user(self, email, password, **other_fields):
         if not email:
@@ -76,6 +78,8 @@ class JobSeekerProfile(models.Model):
     knowledge = models.TextField(max_length=3000, default='', blank=True)
     extra = models.TextField(max_length=3000, default='', blank=True)
 
+    profession_aka_activity = models.ForeignKey(Occupation, on_delete=models.CASCADE, related_name="job_seekers")
+
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}\'s JobSeeker profile'
 
@@ -97,12 +101,15 @@ class JobSeekerProfile(models.Model):
 class JobOffer(models.Model):
     user = models.ForeignKey(JobSeekerProfile, on_delete=models.CASCADE, related_name='job_offers')
 
-    position = models.CharField(max_length=150, blank=True)
+    job_title = models.ForeignKey(Occupation, on_delete=models.CASCADE, related_name="job_offers")
     skills = models.CharField(max_length=300, blank=True)
     knowledge = models.TextField(max_length=3000, blank=True)
     info = models.TextField(max_length=2000, blank=True)
     contract_type = models.CharField(max_length=25, blank=True)
     post_time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.job_title.title}'
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

@@ -4,6 +4,8 @@ from rest_framework.views import APIView
 from .serializers import RegistrationSerializer, JobSeekerProfileSerializer
 
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
+
 
 class RegistrationView(APIView):
     def post(self, request, format=None):
@@ -23,6 +25,13 @@ class RegistrationView(APIView):
         else:
             data = serializer.errors
         return Response(data)
+
+
+class CustomObtainAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        response = super(CustomObtainAuthToken, self).post(request, *args, **kwargs)
+        token = Token.objects.get(key=response.data['token'])
+        return Response({'token': token.key, 'id': token.user_id})
 
 
 class JobSeekerProfileView(APIView):

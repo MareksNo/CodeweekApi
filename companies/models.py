@@ -4,11 +4,13 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from core.models import Occupation
+
 
 class CompanyProfile(models.Model):
     user = models.OneToOneField("users.UserModel", on_delete=models.CASCADE) 
 
-    company_name = models.CharField(max_length=100, blank=True)
+    company_name = models.CharField(max_length=100, blank=True, null=True, unique=True)
     position = models.CharField(max_length=70, blank=True, default='')
     phone_number = models.CharField(max_length=20, blank=True, default='')
     logo = models.ImageField(upload_to='company_photos/', blank=True)
@@ -37,7 +39,7 @@ class CompanyProfile(models.Model):
 class Position(models.Model):
     company = models.ForeignKey(CompanyProfile, on_delete=models.CASCADE, related_name='positions')
 
-    position_title = models.CharField(max_length=300)
+    position_title = models.ForeignKey(Occupation, on_delete=models.CASCADE, related_name="positions")
     position_info = models.TextField(max_length=20000)
     position_tools = models.CharField(max_length=500)
     position_location = models.CharField(max_length=300)
@@ -46,6 +48,10 @@ class Position(models.Model):
     price_range = models.CharField(max_length=200)
     contract_type = models.TextField(max_length=1000)
     post_time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.company.company_name}: {self.position_title.title}'
+
     
 
 
