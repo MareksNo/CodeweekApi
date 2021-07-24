@@ -39,7 +39,7 @@ class CompanyProfile(models.Model):
 class Position(models.Model):
     company = models.ForeignKey(CompanyProfile, on_delete=models.CASCADE, related_name='positions')
 
-    position_title = models.ForeignKey(Occupation, on_delete=models.CASCADE, related_name="positions")
+    position_occupation = models.ForeignKey(Occupation, on_delete=models.CASCADE, related_name="positions")
     position_info = models.TextField(max_length=20000)
     position_tools = models.CharField(max_length=500)
     position_location = models.CharField(max_length=300)
