@@ -1,4 +1,5 @@
 from django.core import exceptions
+from django.utils.datastructures import MultiValueDictKeyError
 
 from rest_framework import permissions, status, serializers
 from rest_framework.exceptions import ValidationError
@@ -9,7 +10,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 
 from .models import CompanyProfile, Position
 from .serializers import CompanyProfileSerializer, PositionSerializer
-from .permissions import IsEmployerOrReadOnly
+from .permissions import IsEmployerOrReadOnly, IsPositionOwnerOrReadOnly
 
 from core.models import Occupation
 
@@ -47,8 +48,6 @@ class CompanyProfileView(APIView):
         return Response(serializer.data)
 
 
-# Need for custom authentication for making sure that user is an owner of a company.
-# Need for custom create, for passing the id of the company profile.
 class PositionListCreateView(ListCreateAPIView):
     queryset = Position.objects.all()
     permission_classes = [IsEmployerOrReadOnly]
@@ -63,22 +62,27 @@ class PositionListCreateView(ListCreateAPIView):
         except exceptions.ObjectDoesNotExist as ex:
             raise serializers.ValidationError({"detail": "User with this ID does not have a CompanyProfile"})
 
+
         try:
             position_occupation = Occupation.objects.get(id=position_data['position_occupation'])
         except exceptions.ObjectDoesNotExist as ex:
             raise serializers.ValidationError({"detail": "Invalid occupation ID"})
-
-
+        except ValueError:
+            raise serializers.ValidationError({"detail": "Provided occupation ID is not numeric"})
+        except MultiValueDictKeyError:
+            raise serializers.ValidationError({"detail": "No occupation ID has been provided"})
+        
+        
         new_position = Position.objects.create(
             company=company_profile,
             position_occupation=position_occupation,
-            position_info=position_data['position_info'],
-            position_tools=position_data['position_tools'],
-            position_location=position_data['position_location'],
-            position_languages=position_data['position_languages'],
-            position_requirements=position_data['position_requirements'],
-            price_range=position_data['price_range'],
-            contract_type=position_data['contract_type']
+            position_info=position_data.get('position_info', 'No info'),
+            position_tools=position_data.get('position_tools', 'N/A'),
+            position_location=position_data.get('position_location', 'N/A'),
+            position_languages=position_data.get('position_languages', 'N/A'),
+            position_requirements=position_data.get('position_requirements', 'N/A'),
+            price_range=position_data.get('price_range', 'N/A'),
+            contract_type=position_data.get('contract_type', 'N/A')
 
         )
         
@@ -88,5 +92,8 @@ class PositionListCreateView(ListCreateAPIView):
 
         return Response(serializer.data)
 
+
 class PositionRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
-    pass
+    serializer_class = PositionSerializer
+    permission_classes = [IsPositionOwnerOrReadOnly]
+    queryset = Position.objects.all()

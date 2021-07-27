@@ -34,15 +34,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 class JobSeekerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobSeekerProfile
-        fields = ['user', 'photo', 'age', 'location', 'interests', 'experience', 'languages', 'knowledge', 'extra']
+        fields = ['id', 'user', 'photo', 'age', 'location', 'interests', 'experience', 'languages', 'knowledge', 'extra', 'profession_aka_activity']
+        read_only_fields = (['user', 'id'])
 
 
-
-    # photo = models.ImageField(upload_to='user_photos/', blank=True)
-    # age = models.IntegerField(validators=[MaxValueValidator(123)], null=True, blank=True)
-    # location = models.TextField(max_length=900, blank=True)
-    # interests = models.TextField(max_length=3000, default='', blank=True)
-    # experience = models.TextField(max_length=3000, default='', blank=True)
-    # languages = models.TextField(max_length=1500, default='', blank=True)
-    # knowledge = models.TextField(max_length=3000, default='', blank=True)
-    # extra = models.TextField(max_length=3000, default='', blank=True)

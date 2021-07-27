@@ -39,7 +39,7 @@ class CompanyProfile(models.Model):
 class Position(models.Model):
     company = models.ForeignKey(CompanyProfile, on_delete=models.CASCADE, related_name='positions')
 
-    position_occupation = models.ForeignKey(Occupation, on_delete=models.CASCADE, related_name="positions")
+    position_occupation = models.ForeignKey(Occupation, on_delete=models.SET_NULL, null=True, related_name="positions")
     position_info = models.TextField(max_length=20000)
     position_tools = models.CharField(max_length=500)
     position_location = models.CharField(max_length=300)
@@ -50,8 +50,4 @@ class Position(models.Model):
     post_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.company.company_name}: {self.position_title.title}'
-
-    
-
-
+        return f'{self.company.company_name}: {self.position_occupation.title}'

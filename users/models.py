@@ -78,7 +78,7 @@ class JobSeekerProfile(models.Model):
     knowledge = models.TextField(max_length=3000, default='', blank=True)
     extra = models.TextField(max_length=3000, default='', blank=True)
 
-    profession_aka_activity = models.ForeignKey(Occupation, on_delete=models.CASCADE, related_name="job_seekers")
+    profession_aka_activity = models.ForeignKey(Occupation, on_delete=models.SET_NULL, null=True, related_name="job_seekers")
 
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}\'s JobSeeker profile'
@@ -101,7 +101,7 @@ class JobSeekerProfile(models.Model):
 class JobOffer(models.Model):
     user = models.ForeignKey(JobSeekerProfile, on_delete=models.CASCADE, related_name='job_offers')
 
-    job_title = models.ForeignKey(Occupation, on_delete=models.CASCADE, related_name="job_offers")
+    job_title = models.ForeignKey(Occupation, on_delete=models.SET_NULL, null=True, related_name="job_offers")
     skills = models.CharField(max_length=300, blank=True)
     knowledge = models.TextField(max_length=3000, blank=True)
     info = models.TextField(max_length=2000, blank=True)
