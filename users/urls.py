@@ -14,5 +14,4 @@ urlpatterns = [
 ]   
 
 # JobOffer Create/Edit/Retrieve/delete (Simmilar to Positions)
-# Job Seeker Profile Edit/Retrieve (Simmilar to Company Profile)
 # User model view, edit/retrieve

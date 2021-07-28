@@ -67,7 +67,7 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
 
 
 class JobSeekerProfile(models.Model):
-    user = models.OneToOneField(UserModel, on_delete=models.CASCADE)
+    user = models.OneToOneField(UserModel, on_delete=models.CASCADE, related_name="jobseeker_profile")
 
     photo = models.ImageField(upload_to='user_photos/', blank=True)
     age = models.IntegerField(validators=[MaxValueValidator(123)], null=True, blank=True)

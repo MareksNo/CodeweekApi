@@ -20,7 +20,7 @@ class CompanyProfileView(APIView):
     parser_classes = [MultiPartParser, FormParser]
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    def put(self, request, user_id=None):
+    def put(self, request, company_id=None):
         print(request.data)
         data = {}
 
@@ -38,13 +38,14 @@ class CompanyProfileView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-    def get(self, request, user_id=None):
+    def get(self, request, company_id=None):
         try:
-            profile = CompanyProfile.objects.get(user=user_id)
+            profile = CompanyProfile.objects.get(id=company_id)
         except CompanyProfile.DoesNotExist:
             return Response(status.HTTP_404_NOT_FOUND)
         
         serializer = CompanyProfileSerializer(profile)
+       
         return Response(serializer.data)
 
 

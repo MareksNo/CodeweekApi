@@ -8,7 +8,7 @@ from core.models import Occupation
 
 
 class CompanyProfile(models.Model):
-    user = models.OneToOneField("users.UserModel", on_delete=models.CASCADE) 
+    user = models.OneToOneField("users.UserModel", on_delete=models.CASCADE, related_name="company_profile") 
 
     company_name = models.CharField(max_length=100, blank=True, null=True, unique=True)
     position = models.CharField(max_length=70, blank=True, default='')

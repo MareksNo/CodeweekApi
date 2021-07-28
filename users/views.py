@@ -1,3 +1,5 @@
+from django.contrib.auth import get_user_model
+
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -8,7 +10,10 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 
 from .serializers import RegistrationSerializer, JobSeekerProfileSerializer
-from .models import JobSeekerProfile
+from .models import JobSeekerProfile, UserModel
+
+from companies.models import CompanyProfile
+
 
 
 class RegistrationView(APIView):
@@ -35,7 +40,31 @@ class CustomObtainAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
         response = super(CustomObtainAuthToken, self).post(request, *args, **kwargs)
         token = Token.objects.get(key=response.data['token'])
-        return Response({'token': token.key, 'id': token.user_id})
+
+        data = {}
+
+        User = get_user_model()
+        user = User.objects.get(id=token.user_id)
+
+        data['user_id'] = user.id
+        data['token'] = token.key
+
+        try:
+            if user.is_employer:
+                profile = user.company_profile
+                
+            else:
+                profile = user.jobseeker_profile
+        except User.jobseeker_profile.RelatedObjectDoesNotExist:
+            return Response({"detail": "JobSeekerProfile does not exist for this user"}, status=status.HTTP_400_BAD_REQUEST)
+        except User.company_profile.RelatedObjectDoesNotExist:
+            return Response({"detail": "CompanyProfile does not exist for this user"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        data['is_employer'] = user.is_employer
+        data['profile'] = profile.id
+        
+
+        return Response(data)
 
 
 class JobSeekerProfileView(APIView):
@@ -69,33 +98,8 @@ class JobSeekerProfileView(APIView):
         return Response(serializer.data)
 
 
-# class CompanyProfileView(APIView):
-#     parser_classes = [MultiPartParser, FormParser]
-#     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+class JobOfferListCreateView(generics.ListCreateAPIView):
+    pass
 
-#     def put(self, request, user_id=None):
-#         print(request.data)
-#         data = {}
-
-#         try:
-#             profile = CompanyProfile.objects.get(user=request.user.id)
-#         except CompanyProfile.DoesNotExist:
-#             return Response(status.HTTP_404_NOT_FOUND)
-
-#         serializer = CompanyProfileSerializer(profile, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             data = serializer.data
-#             data['success'] = True
-#             return Response(data=data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-#     def get(self, request, user_id=None):
-#         try:
-#             profile = CompanyProfile.objects.get(user=user_id)
-#         except CompanyProfile.DoesNotExist:
-#             return Response(status.HTTP_404_NOT_FOUND)
-        
-#         serializer = CompanyProfileSerializer(profile)
-#         return Response(serializer.data)
+class JobOfferRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    pass
