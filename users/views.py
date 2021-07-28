@@ -71,7 +71,7 @@ class JobSeekerProfileView(APIView):
     parser_classes = [MultiPartParser, FormParser]
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    def put(self, request, user_id=None):
+    def put(self, request, profile_id=None):
         data = {}
 
         try:
@@ -88,9 +88,9 @@ class JobSeekerProfileView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request, user_id=None):
+    def get(self, request, profile_id=None):
         try:
-           profile = JobSeekerProfile.objects.get(user=user_id)
+           profile = JobSeekerProfile.objects.get(id=profile_id)
         except JobSeekerProfile.DoesNotExist:
             return Response(status.HTTP_404_NOT_FOUND)
 

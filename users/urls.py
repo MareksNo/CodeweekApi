@@ -9,7 +9,7 @@ from .views import (
 urlpatterns = [
     path('register/', RegistrationView.as_view(), name='register'),
     path('login/', CustomObtainAuthToken.as_view(), name='login'),
-    path('jsprofile/<int:user_id>/', JobSeekerProfileView.as_view(), name='jsprofile'),
+    path('jsprofile/<int:profile_id>/', JobSeekerProfileView.as_view(), name='jsprofile'),
 
 ]   
 
