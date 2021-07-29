@@ -93,13 +93,13 @@ class JobSeekerProfile(models.Model):
     def save_user_profile(sender, instance, **kwargs):
         if not instance.is_employer:
             try:
-                instance.jobseekerprofile.save()
+                instance.jobseeker_profile.save()
             except ObjectDoesNotExist:
                 JobSeekerProfile.objects.create(user=instance)
 
 
 class JobOffer(models.Model):
-    user = models.ForeignKey(JobSeekerProfile, on_delete=models.CASCADE, related_name='job_offers')
+    user_profile = models.ForeignKey(JobSeekerProfile, on_delete=models.CASCADE, related_name='job_offers')
 
     job_title = models.ForeignKey(Occupation, on_delete=models.SET_NULL, null=True, related_name="job_offers")
     skills = models.CharField(max_length=300, blank=True)

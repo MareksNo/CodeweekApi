@@ -1,7 +1,9 @@
 from django.db import models
 from rest_framework import serializers
 
-from .models import UserModel, JobSeekerProfile
+from .models import JobOffer, UserModel, JobSeekerProfile
+
+from core.serilaizers import OccupationSerializer
 
 class RegistrationSerializer(serializers.ModelSerializer):
 
@@ -37,4 +39,10 @@ class JobSeekerProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'photo', 'age', 'location', 'interests', 'experience', 'languages', 'knowledge', 'extra', 'profession_aka_activity']
         read_only_fields = (['user', 'id'])
 
+
+class JobOfferSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JobOffer
+        fields = ['id', 'user_profile', 'job_title', 'skills', 'knowledge', 'info', 'contract_type', 'post_time']
+        read_only_fields = (['user_profile', 'post_time', 'id'])
 

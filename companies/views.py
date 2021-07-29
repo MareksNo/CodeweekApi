@@ -2,7 +2,6 @@ from django.core import exceptions
 from django.utils.datastructures import MultiValueDictKeyError
 
 from rest_framework import permissions, status, serializers
-from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -72,6 +71,8 @@ class PositionListCreateView(ListCreateAPIView):
             raise serializers.ValidationError({"detail": "Provided occupation ID is not numeric"})
         except MultiValueDictKeyError:
             raise serializers.ValidationError({"detail": "No occupation ID has been provided"})
+        except KeyError:
+            raise serializers.ValidationError({"detail": "No position_occupation has been provided"})
         
         
         new_position = Position.objects.create(

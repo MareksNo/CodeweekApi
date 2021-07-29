@@ -32,7 +32,7 @@ class CompanyProfile(models.Model):
     def save_user_profile(sender, instance, **kwargs):
         if instance.is_employer:
             try:
-                instance.companyprofile.save()
+                instance.company_profile.save()
             except ObjectDoesNotExist:
                 CompanyProfile.objects.create(user=instance)
 

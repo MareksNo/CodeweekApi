@@ -1,6 +1,8 @@
+from django.core import exceptions
+from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth import get_user_model
 
-from rest_framework import generics, status
+from rest_framework import generics, serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -9,10 +11,11 @@ from rest_framework import permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 
-from .serializers import RegistrationSerializer, JobSeekerProfileSerializer
-from .models import JobSeekerProfile, UserModel
+from .serializers import RegistrationSerializer, JobSeekerProfileSerializer, JobOfferSerializer
+from .models import JobOffer, JobSeekerProfile
+from .permissions import IsJobSeekerOrReadOnly
 
-from companies.models import CompanyProfile
+from companies.models import Occupation
 
 
 
@@ -98,8 +101,49 @@ class JobSeekerProfileView(APIView):
         return Response(serializer.data)
 
 
+# Needs testing
 class JobOfferListCreateView(generics.ListCreateAPIView):
-    pass
+    queryset = JobOffer.objects.all()
+    permission_classes = [IsJobSeekerOrReadOnly]
+    serializer_class = JobOfferSerializer
+
+    def create(self, request, *args, **kwargs):
+        joboffer_data = request.data
+
+        try:
+            profile = JobSeekerProfile.objects.get(user=request.user)
+        except exceptions.ObjectDoesNotExist:
+            raise serializers.ValidationError({"detail": "JobSeeker profile not found for current user"})
+
+        
+        try:
+            job_title = Occupation.objects.get(id=joboffer_data['job_title'])
+        except exceptions.ObjectDoesNotExist as ex:
+            raise serializers.ValidationError({"detail": "Invalid occupation ID"})
+        except ValueError:
+            raise serializers.ValidationError({"detail": "Provided occupation ID is not numeric"})
+        except MultiValueDictKeyError:
+            raise serializers.ValidationError({"detail": "No occupation ID has been provided"})
+        except KeyError:
+            raise serializers.ValidationError({"detail": "No job title has been provided"})
+
+
+
+        new_job_offer = JobOffer.objects.create(
+            user_profile=profile,
+            job_title=job_title,
+            info=joboffer_data.get('info', 'No info'),
+            skills=joboffer_data.get('skills', 'N/A'),
+            contract_type=joboffer_data.get('contract_type', 'N/A'),
+            knowledge=joboffer_data.get('knowledge', 'N/A'),
+        )
+        
+        new_job_offer.save()
+
+        serializer = JobOfferSerializer(new_job_offer)
+
+        return Response(serializer.data)
+
 
 class JobOfferRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     pass
