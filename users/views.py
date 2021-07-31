@@ -15,7 +15,7 @@ from .serializers import RegistrationSerializer, JobSeekerProfileSerializer, Job
 from .models import JobOffer, JobSeekerProfile
 from .permissions import IsJobSeekerOrReadOnly
 
-from companies.models import Occupation
+from companies.models import Occupation, CompanyProfile
 
 
 
@@ -31,6 +31,11 @@ class RegistrationView(APIView):
             data['last_name'] = user.last_name
             data['first_name'] = user.first_name
             data['id'] = user.id
+
+            if user.is_employer:
+                data['profile_id'] = CompanyProfile.objects.get(user=user).id
+            else:
+                data['profile_id'] = JobSeekerProfile.objects.get(user=user).id
 
             token = Token.objects.get(user=user)
             data['token'] = token.key
