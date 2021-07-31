@@ -9,3 +9,22 @@ class IsJobSeekerOrReadOnly(permissions.BasePermission):
         if request.user.is_authenticated and not request.user.is_employer or request.method in permissions.SAFE_METHODS:
             return True
         return False
+
+class IsJobOfferOwnerOrReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_authenticated and not request.user.is_employer or request.method in permissions.SAFE_METHODS:
+            return True
+        return False
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        try:
+            user_profile = JobSeekerProfile.objects.get(user=request.user)
+        except ObjectDoesNotExist:
+            return False
+
+        if obj.user_profile == user_profile:
+            return True
+        return False

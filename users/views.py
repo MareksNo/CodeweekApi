@@ -13,7 +13,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 
 from .serializers import RegistrationSerializer, JobSeekerProfileSerializer, JobOfferSerializer
 from .models import JobOffer, JobSeekerProfile
-from .permissions import IsJobSeekerOrReadOnly
+from .permissions import IsJobSeekerOrReadOnly, IsJobOfferOwnerOrReadOnly
 
 from companies.models import Occupation, CompanyProfile
 
@@ -111,6 +111,7 @@ class JobOfferListCreateView(generics.ListCreateAPIView):
     queryset = JobOffer.objects.all()
     permission_classes = [IsJobSeekerOrReadOnly]
     serializer_class = JobOfferSerializer
+    filterset_fields = ['user_profile', 'id', 'job_title']
 
     def create(self, request, *args, **kwargs):
         joboffer_data = request.data
@@ -151,4 +152,6 @@ class JobOfferListCreateView(generics.ListCreateAPIView):
 
 
 class JobOfferRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    pass
+    serializer_class = JobOfferSerializer
+    permission_classes = [IsJobOfferOwnerOrReadOnly]
+    queryset = JobOffer.objects.all()
