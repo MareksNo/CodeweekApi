@@ -45,7 +45,6 @@ class CustomAccountManager(BaseUserManager):
         return self.create_user(email, password, **other_fields)
 
 
-
 class UserModel(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(gettext_lazy('email address'), unique=True)
     first_name = models.CharField(max_length=150)
@@ -70,7 +69,7 @@ class JobSeekerProfile(models.Model):
     user = models.OneToOneField(UserModel, on_delete=models.CASCADE, related_name="jobseeker_profile")
 
     photo = models.ImageField(upload_to='user_photos/', blank=True)
-    age = models.IntegerField(validators=[MaxValueValidator(123)], null=True, blank=True)
+    birth_date = models.CharField(max_length=40, blank=True)
     location = models.TextField(max_length=900, blank=True)
     interests = models.TextField(max_length=3000, default='', blank=True)
     experience = models.TextField(max_length=3000, default='', blank=True)
