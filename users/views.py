@@ -11,11 +11,12 @@ from rest_framework import permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 
-from .serializers import RegistrationSerializer, JobSeekerProfileSerializer, JobOfferSerializer
+from .serializers import RegistrationSerializer, JobSeekerProfileSerializer, JobOfferSerializer, UserSerializer
 from .models import JobOffer, JobSeekerProfile
-from .permissions import IsJobSeekerOrReadOnly, IsJobOfferOwnerOrReadOnly
+from .permissions import IsJobSeekerOrReadOnly, IsJobOfferOwnerOrReadOnly, UserIsOwnerOrReadOnly
 
 from companies.models import Occupation, CompanyProfile
+from companies.serializers import CompanyProfileSerializer
 
 
 
@@ -41,6 +42,34 @@ class RegistrationView(APIView):
             data['token'] = token.key
         else:
             data = serializer.errors
+        return Response(data)
+
+
+class UserView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = get_user_model().objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [UserIsOwnerOrReadOnly]
+
+    def get(self, request, pk, *args, **kwargs):
+        data = {}
+
+        User = get_user_model()
+        try:
+           user = User.objects.get(id=pk)
+        except User.DoesNotExist:
+            return Response(status.HTTP_404_NOT_FOUND)
+
+
+        serializer = UserSerializer(user)
+        data = serializer.data
+
+        if user.is_employer:
+            profile = user.company_profile
+            data['profile'] = CompanyProfileSerializer(profile).data
+        else:
+            profile = user.jobseeker_profile
+            data['profile'] = JobSeekerProfileSerializer(profile).data
+
         return Response(data)
 
 

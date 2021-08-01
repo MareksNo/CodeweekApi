@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import fields
 from rest_framework import serializers
 
 from .models import JobOffer, UserModel, JobSeekerProfile
@@ -31,6 +32,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserModel
+        fields = ['id', 'email', 'is_employer', 'first_name', 'last_name']
+        read_only_fields = (['is_employer', 'id'])
 
 
 class JobSeekerProfileSerializer(serializers.ModelSerializer):
