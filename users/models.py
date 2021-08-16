@@ -70,10 +70,10 @@ class JobSeekerProfile(models.Model):
 
     photo = models.ImageField(upload_to='user_photos/', blank=True)
     birth_date = models.CharField(max_length=40, blank=True)
-    location = models.TextField(max_length=900, blank=True)
-    interests = models.TextField(max_length=3000, default='', blank=True)
+    location = models.TextField(max_length=900, blank=True) # split into 2 country and city
+    interests = models.TextField(max_length=3000, default='', blank=True) # make into an array
     experience = models.TextField(max_length=3000, default='', blank=True)
-    languages = models.TextField(max_length=1500, default='', blank=True)
+    languages = models.TextField(max_length=1500, default='', blank=True) # make into an array
     knowledge = models.TextField(max_length=3000, default='', blank=True)
     extra = models.TextField(max_length=3000, default='', blank=True)
 

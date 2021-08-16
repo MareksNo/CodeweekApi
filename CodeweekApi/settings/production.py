@@ -8,7 +8,7 @@ load_dotenv()
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost', 'codeweekapi.herokuapp.com', '127.0.0.1']
 
 
 # Sentry setup
