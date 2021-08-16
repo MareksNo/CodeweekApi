@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import dj_database_url
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -100,6 +101,9 @@ USE_L10N = True
 
 USE_TZ = True
 
+
+db_from_env = dj_database_url.config(conn_max_age=600)
+
 DATABASES = {
 
     'default': {
@@ -119,6 +123,9 @@ DATABASES = {
     }
 
 }
+
+DATABASES['default'].update(db_from_env)
+
 
 
 # Static files (CSS, JavaScript, Images)
