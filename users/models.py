@@ -1,5 +1,6 @@
 from django.utils.translation import gettext_lazy
 
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
@@ -70,10 +71,11 @@ class JobSeekerProfile(models.Model):
 
     photo = models.ImageField(upload_to='user_photos/', blank=True)
     birth_date = models.CharField(max_length=40, blank=True)
-    location = models.TextField(max_length=900, blank=True) # split into 2 country and city
-    interests = models.TextField(max_length=3000, default='', blank=True) # make into an array
-    experience = models.TextField(max_length=3000, default='', blank=True)
-    languages = models.TextField(max_length=1500, default='', blank=True) # make into an array
+    country = models.TextField(max_length=200, blank=True)
+    city = models.TextField(max_length=200, blank=True)
+    interests = ArrayField(models.CharField(max_length=200), blank=True, default=list) 
+    experience = models.TextField(max_length=3000, default='', blank=True)  
+    languages = ArrayField(models.CharField(max_length=200), blank=True, default=list)
     knowledge = models.TextField(max_length=3000, default='', blank=True)
     extra = models.TextField(max_length=3000, default='', blank=True)
 

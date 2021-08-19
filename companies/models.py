@@ -1,5 +1,6 @@
 from django.db import models
 
+from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -17,7 +18,8 @@ class CompanyProfile(models.Model):
     background_photo = models.ImageField(upload_to='company_photos/', blank=True)
     country = models.CharField(max_length=20, blank=True, default='')
     company_size = models.CharField(max_length=30, blank=True, default='')
-    location = models.TextField(max_length=900, blank=True)
+    country = models.TextField(max_length=900, blank=True)
+    city = models.TextField(max_length=200, blank=True)
 
     def __str__(self):
         return f'{self.company_name}\'s Company profile'
@@ -42,8 +44,9 @@ class Position(models.Model):
     position_occupation = models.ForeignKey(Occupation, on_delete=models.SET_NULL, null=True, related_name="positions")
     position_info = models.TextField(max_length=20000)
     position_tools = models.CharField(max_length=500)
-    position_location = models.CharField(max_length=300)
-    position_languages = models.CharField(max_length=400)
+    position_city = models.CharField(max_length=300)
+    position_country = models.CharField(max_length=250)
+    position_languages = ArrayField(models.CharField(max_length=200), blank=True, default=list)
     position_requirements = models.TextField(max_length=20000)
     price_range = models.CharField(max_length=200)
     contract_type = models.TextField(max_length=1000)
