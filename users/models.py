@@ -78,6 +78,9 @@ class JobSeekerProfile(models.Model):
     languages = ArrayField(models.CharField(max_length=200), blank=True, default=list)
     knowledge = models.TextField(max_length=3000, default='', blank=True)
     extra = models.TextField(max_length=3000, default='', blank=True)
+    bio = models.TextField(max_length=2000, default='', blank=True)
+    is_active_jobseeker = models.BooleanField(default=True)
+
 
     profession_aka_activity = models.ForeignKey(Occupation, on_delete=models.SET_NULL, null=True, related_name="job_seekers")
 
