@@ -1,6 +1,10 @@
 from .base import *
 
 from dotenv import load_dotenv
+
+
+import cloudinary, cloudinary_storage
+
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
@@ -10,6 +14,13 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['localhost', 'codeweekapi.herokuapp.com', '127.0.0.1']
 
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'mareks',
+    'API_KEY': 459214395334741,
+    'API_SECRET': 'FahupuCIPe6C4m6cIOmT1Ak4wHQ',
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Sentry setup
 sentry_sdk.init(

@@ -2,6 +2,9 @@ import os
 from pathlib import Path
 
 import dj_database_url
+
+import cloudinary, cloudinary_storage
+
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,6 +27,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'cloudinary',
+    'cloudinary_storage',
     'django_filters',
     'corsheaders',
     'core',
