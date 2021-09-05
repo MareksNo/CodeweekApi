@@ -70,6 +70,8 @@ class UserView(generics.RetrieveUpdateDestroyAPIView):
             profile = user.jobseeker_profile
             data['profile'] = JobSeekerProfileSerializer(profile).data
 
+        data['isAdmin'] = user.is_superuser
+
         return Response(data)
 
 
@@ -97,6 +99,8 @@ class SelfUserView(generics.RetrieveUpdateDestroyAPIView):
         else:
             profile = user.jobseeker_profile
             data['profile'] = JobSeekerProfileSerializer(profile).data
+
+        data['isAdmin'] = user.is_superuser
 
         return Response(data)
 
