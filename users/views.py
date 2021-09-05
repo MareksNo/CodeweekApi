@@ -73,6 +73,34 @@ class UserView(generics.RetrieveUpdateDestroyAPIView):
         return Response(data)
 
 
+class SelfUserView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = get_user_model().objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        data = {}
+
+        User = get_user_model()
+        try:
+           user = User.objects.get(id=request.user.id)
+        except User.DoesNotExist:
+            return Response(status.HTTP_404_NOT_FOUND)
+
+
+        serializer = UserSerializer(user)
+        data = serializer.data
+
+        if user.is_employer:
+            profile = user.company_profile
+            data['profile'] = CompanyProfileSerializer(profile).data
+        else:
+            profile = user.jobseeker_profile
+            data['profile'] = JobSeekerProfileSerializer(profile).data
+
+        return Response(data)
+
+
 class CustomObtainAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
         response = super(CustomObtainAuthToken, self).post(request, *args, **kwargs)
