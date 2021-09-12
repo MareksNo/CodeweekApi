@@ -3,8 +3,6 @@ from pathlib import Path
 
 import dj_database_url
 
-import cloudinary, cloudinary_storage
-
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -155,7 +153,8 @@ AUTH_USER_MODEL = 'users.UserModel'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://127.0.0.1:3000"
+    "http://127.0.0.1:3000",
+    "https://youthdeal-frontend.vercel.app/"
 ]
 
 # Rest framework authentication

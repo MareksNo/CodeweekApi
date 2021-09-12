@@ -105,6 +105,9 @@ class SelfUserView(generics.RetrieveUpdateDestroyAPIView):
         return Response(data)
 
 
+
+
+
 class CustomObtainAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
         response = super(CustomObtainAuthToken, self).post(request, *args, **kwargs)
