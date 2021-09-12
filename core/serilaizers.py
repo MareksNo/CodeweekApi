@@ -7,13 +7,15 @@ from .models import OccupationCategory, Occupation
 class CEDOccupationCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = OccupationCategory
-        fields=['title']
+        fields=['id', 'title']
+        read_only_fields = (['id'])
 
 
 class OccupationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Occupation
         fields = ['id', 'title', 'category']
+        read_only_fields = (['id'])
 
 
 class RetrieveOccupationCategorySerializer(serializers.ModelSerializer):
@@ -21,4 +23,5 @@ class RetrieveOccupationCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OccupationCategory
-        fields = ['title', 'occupations']
+        fields = ['id', 'title', 'occupations']
+        read_only_fields = (['id'])

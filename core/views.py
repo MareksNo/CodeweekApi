@@ -8,7 +8,7 @@ from .serilaizers import CEDOccupationCategorySerializer, OccupationSerializer, 
 from .models import Occupation, OccupationCategory
 
 class CEDOccupationCategoryViewSet(ModelViewSet):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminOrReadOnly]
     serializer_class = CEDOccupationCategorySerializer
     queryset = OccupationCategory.objects.all()
 
