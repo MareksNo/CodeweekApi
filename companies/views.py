@@ -82,7 +82,7 @@ class PositionListCreateView(ListCreateAPIView):
             position_tools=position_data.get('position_tools', 'N/A'),
             position_country=position_data.get('position_country', 'N/A'),
             position_city=position_data.get('position_city', 'N/A'),
-            position_languages=position_data.get('position_languages', 'N/A'),
+            position_languages=position_data.get('position_languages', list()),
             position_requirements=position_data.get('position_requirements', 'N/A'),
             price_range=position_data.get('price_range', 'N/A'),
             contract_type=position_data.get('contract_type', 'N/A')

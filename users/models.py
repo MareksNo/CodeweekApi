@@ -69,7 +69,7 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
 class JobSeekerProfile(models.Model):
     user = models.OneToOneField(UserModel, on_delete=models.CASCADE, related_name="jobseeker_profile")
 
-    photo = models.ImageField(upload_to='user_photos/', blank=True)
+    photo = models.ImageField(upload_to='user_photos/', blank=True, default="/default_images/jobseeker_default.jpg")
     birth_date = models.CharField(max_length=40, blank=True)
     country = models.TextField(max_length=200, blank=True)
     city = models.TextField(max_length=200, blank=True)
@@ -113,7 +113,11 @@ class JobOffer(models.Model):
     post_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.job_title.title}'
+
+        if self.job_title:
+            return f'{self.job_title.title}'
+        else:
+            return 'No job title'
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

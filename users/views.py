@@ -203,7 +203,7 @@ class JobOfferListCreateView(generics.ListCreateAPIView):
             user_profile=profile,
             job_title=job_title,
             info=joboffer_data.get('info', 'No info'),
-            skills=joboffer_data.get('skills', 'N/A'),
+            skills=joboffer_data.get('skills', list()),
             contract_type=joboffer_data.get('contract_type', 'N/A'),
             knowledge=joboffer_data.get('knowledge', 'N/A'),
         )
