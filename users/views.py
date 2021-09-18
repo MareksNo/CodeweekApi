@@ -200,7 +200,7 @@ class JobOfferListCreateView(generics.ListCreateAPIView):
     queryset = JobOffer.objects.all()
     permission_classes = [IsJobSeekerOrReadOnly]
     serializer_class = JobOfferSerializer
-    filterset_fields = ['user_profile', 'id', 'job_title']
+    filterset_fields = ['user_profile', 'id', 'job_title', 'job_title__category']
 
     def create(self, request, *args, **kwargs):
         joboffer_data = request.data

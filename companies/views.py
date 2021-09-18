@@ -52,7 +52,7 @@ class PositionListCreateView(ListCreateAPIView):
     queryset = Position.objects.all()
     permission_classes = [IsEmployerOrReadOnly]
     serializer_class = PositionSerializer
-    filterset_fields = ['company', 'position_occupation', 'id', ]
+    filterset_fields = ['company', 'position_occupation', 'id', 'position_occupation__category']
 
     def create(self, request, *args, **kwargs):
         position_data = request.data
