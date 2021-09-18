@@ -1,10 +1,15 @@
 from django.db import models
 from django.db.models import fields
+from django.forms.models import model_to_dict
+
 from rest_framework import serializers
 
 from .models import JobOffer, UserModel, JobSeekerProfile
 
 from core.serilaizers import OccupationSerializer
+
+from companies.serializers import CompanyProfileSerializer
+from companies.models import CompanyProfile
 
 class RegistrationSerializer(serializers.ModelSerializer):
 
@@ -36,8 +41,43 @@ class RegistrationSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserModel
-        fields = ['id', 'email', 'is_employer', 'first_name', 'last_name']
-        read_only_fields = (['is_employer', 'id'])
+        fields = ['id', 'email', 'is_employer', 'first_name', 'last_name', 'has_premium']
+        read_only_fields = (['is_employer', 'id', 'has_premium'])
+
+
+class SearchUserSerializer(serializers.ModelSerializer):
+    profile = serializers.SerializerMethodField()
+    class Meta:
+        model = UserModel
+        fields = ['id', 'email', 'is_employer', 'first_name', 'last_name', 'profile', 'has_premium']
+        read_only_fields = (['is_employer', 'id', 'has_premium'])
+
+    def get_profile(self, obj):
+        if not obj.is_employer:
+            profile = JobSeekerProfile.objects.get(user=obj)
+            profile_dict = model_to_dict(profile)
+            
+            if not profile_dict['photo']:
+                profile_dict['photo'] = ''
+            else:
+                profile_dict['photo'] = profile.photo.url
+
+            return profile_dict
+        else:
+            profile = CompanyProfile.objects.get(user=obj)
+            profile_dict = model_to_dict(profile)
+            if not profile_dict['background_photo']:
+                profile_dict['background_photo'] = ''
+            else:
+                profile_dict['background_photo'] = profile.background_photo.url
+
+            if not profile_dict['logo']:
+                profile_dict['logo'] = ''
+            else:
+                profile_dict['logo'] = profile.logo.url
+            
+            return profile_dict 
+
 
 
 class JobSeekerProfileSerializer(serializers.ModelSerializer):

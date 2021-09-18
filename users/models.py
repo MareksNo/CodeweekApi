@@ -50,6 +50,7 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(gettext_lazy('email address'), unique=True)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
+    has_premium = models.BooleanField(default=False)
 
     date_joined = models.DateTimeField(gettext_lazy('date joined'), auto_now_add=True)
 

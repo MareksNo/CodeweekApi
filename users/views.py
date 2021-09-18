@@ -1,8 +1,10 @@
+from re import I
 from django.core import exceptions
+from django.http import QueryDict
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth import get_user_model
 
-from rest_framework import generics, serializers, status
+from rest_framework import generics, request, serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -11,7 +13,7 @@ from rest_framework import permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 
-from .serializers import RegistrationSerializer, JobSeekerProfileSerializer, JobOfferSerializer, UserSerializer
+from .serializers import RegistrationSerializer, JobSeekerProfileSerializer, JobOfferSerializer, SearchUserSerializer, UserSerializer
 from .models import JobOffer, JobSeekerProfile
 from .permissions import IsJobSeekerOrReadOnly, IsJobOfferOwnerOrReadOnly, UserIsOwnerOrReadOnly
 
@@ -32,6 +34,7 @@ class RegistrationView(APIView):
             data['last_name'] = user.last_name
             data['first_name'] = user.first_name
             data['id'] = user.id
+            data['has_premium'] = user.has_premium
 
             if user.is_employer:
                 data['profile_id'] = CompanyProfile.objects.get(user=user).id
@@ -105,7 +108,30 @@ class SelfUserView(generics.RetrieveUpdateDestroyAPIView):
         return Response(data)
 
 
+class UserListView(generics.ListAPIView):
+    queryset = get_user_model().objects.all()
+    serializer_class = SearchUserSerializer
 
+    def get_queryset(self):
+        User = get_user_model()
+        search_name = self.request.query_params.get('name', '')
+        search_company = self.request.query_params.get('company', '')
+        if search_company:
+            
+            company_users = User.objects.filter(is_employer=True, company_profile__company_name__icontains=search_company)
+            
+            return company_users
+
+        if search_name:
+            name_split = search_name.split(' ')
+            if len(name_split) >= 2:
+                first_name, last_name = name_split
+
+                return (User.objects.filter(first_name__icontains=first_name, last_name__icontains=last_name))
+            
+            return list()
+
+        return(User.objects.all())
 
 
 class CustomObtainAuthToken(ObtainAuthToken):
@@ -170,7 +196,6 @@ class JobSeekerProfileView(APIView):
         return Response(serializer.data)
 
 
-# Needs testing
 class JobOfferListCreateView(generics.ListCreateAPIView):
     queryset = JobOffer.objects.all()
     permission_classes = [IsJobSeekerOrReadOnly]
