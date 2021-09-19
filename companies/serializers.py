@@ -7,7 +7,7 @@ class CompanyProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CompanyProfile
-        fields = ['id', 'user', 'company_name', 'position', 'phone_number', 'logo', 'background_photo', 'country', 'company_size', 'country', 'city', 'specialization', 'description']
+        fields = ['id', 'user', 'company_name', 'position', 'phone_number', 'logo', 'background_photo', 'country', 'company_size', 'country', 'city', 'specialization', 'description', 'website_url']
         read_only_fields = (['id', 'user'])
 
 class PositionSerializer(serializers.ModelSerializer):

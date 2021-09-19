@@ -22,6 +22,7 @@ class CompanyProfile(models.Model):
     city = models.TextField(max_length=200, blank=True)
     description = models.TextField(max_length=2000, blank=True)
     specialization = models.CharField(max_length=500, blank=True)
+    website_url = models.CharField(max_length=200, blank=True, default='')
 
     def __str__(self):
         return f'{self.company_name}\'s Company profile'
