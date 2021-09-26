@@ -1,11 +1,13 @@
 from django.db import models
 
 from django.contrib.postgres.fields import ArrayField
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+
 from core.models import Occupation
+import users.models as user_models
 
 
 class CompanyProfile(models.Model):
@@ -41,6 +43,7 @@ class CompanyProfile(models.Model):
             except ObjectDoesNotExist:
                 CompanyProfile.objects.create(user=instance)
 
+
 class Position(models.Model):
     company = models.ForeignKey(CompanyProfile, on_delete=models.CASCADE, related_name='positions')
 
@@ -57,3 +60,24 @@ class Position(models.Model):
 
     def __str__(self):
         return f'{self.company.company_name}: {self.position_occupation.title}'
+
+
+
+class Match(models.Model):
+    jobseeker = models.ForeignKey(user_models.JobSeekerProfile, on_delete=models.CASCADE)
+    company = models.ForeignKey(CompanyProfile, on_delete=models.CASCADE)
+    position = models.ForeignKey(Position, on_delete=models.CASCADE)
+
+    jobseeker_accepted = models.BooleanField(null=True)
+    company_accepted = models.BooleanField(null=True)
+
+    matched = models.BooleanField(default=False)
+
+
+    def clean(self):
+        if not self.company == self.position.company:
+            raise ValidationError("Please make sure that the company profile matches the position")
+        return super().clean()
+
+    def __str__(self):
+        return f'Position id {self.position.id}: Jobseeker: {self.jobseeker.user.email}, Company {self.company.company_name}'

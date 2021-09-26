@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework import serializers
 
-from .models import CompanyProfile, Position
+from .models import CompanyProfile, Match, Position
 
 class CompanyProfileSerializer(serializers.ModelSerializer):
 
@@ -12,7 +12,20 @@ class CompanyProfileSerializer(serializers.ModelSerializer):
 
 class PositionSerializer(serializers.ModelSerializer):
 
+
     class Meta:
         model = Position
         fields = ['id', 'company', 'position_occupation', 'position_info', 'position_tools', 'position_city', 'position_country', 'position_languages', 'position_requirements', 'price_range', 'contract_type', 'post_time']
         read_only_fields = (['company', 'post_time', 'id'])
+
+class PositionMatchSerializer(serializers.Serializer):
+    accepted = serializers.BooleanField(required=True)
+    jobseeker_profile = serializers.IntegerField(required=False)
+    position_id = serializers.IntegerField(required=True)
+
+class PositionMatchModelSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Match
+        fields = ['id', 'jobseeker', 'company', 'position', 'jobseeker_accepted', 'company_accepted', 'matched']
+        

@@ -1,18 +1,98 @@
 from django.core import exceptions
 from django.utils.datastructures import MultiValueDictKeyError
+from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions, status, serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import FormParser, MultiPartParser
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
-from .models import CompanyProfile, Position
-from .serializers import CompanyProfileSerializer, PositionSerializer
+from .models import CompanyProfile, Position, Match
+from .serializers import CompanyProfileSerializer, PositionMatchModelSerializer, PositionSerializer, PositionMatchSerializer
 from .permissions import IsEmployerOrReadOnly, IsPositionOwnerOrReadOnly
+
+from users.models import JobSeekerProfile
 
 from core.models import Occupation
 
+
+class MatchView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+
+        user = request.user
+
+        serializer = PositionMatchSerializer(data=request.POST)
+
+        serializer.is_valid(raise_exception=True)
+
+        accepted = serializer.data['accepted']
+        position_id = serializer.data['position_id']
+
+        if user.is_employer:
+            user_profile = CompanyProfile.objects.get(user=user)
+            position = get_object_or_404(Position, company=user_profile, id=position_id)
+            
+            try:
+                jobseeker_id = serializer.data['jobseeker_profile']
+            except KeyError:
+                raise serializers.ValidationError({'detail': 'No jobseeker was provided'})
+
+            try:
+                jobseeker = get_object_or_404(JobSeekerProfile, id=jobseeker_id)
+            except ValueError:
+                raise serializers.ValidationError({'detail': "Invalid jobseeker id provided"})
+
+            match = get_object_or_404(Match, jobseeker=jobseeker, position=position, company=user_profile)
+            
+            match.company_accepted = accepted
+            
+            if match.company_accepted and match.jobseeker_accepted:
+                
+                match.matched = True
+            else:
+                match.matched = False
+            
+            match.save()
+
+        else:
+            user_profile = JobSeekerProfile.objects.get(user=user)
+
+            
+            position = get_object_or_404(Position, id=position_id)
+           
+            match, created = Match.objects.get_or_create(position=position, jobseeker=user_profile, company=position.company)
+            
+
+            match.jobseeker_accepted = accepted
+
+            if match.company_accepted == True and match.jobseeker_accepted == True:
+                match.matched = True
+            else:
+                match.matched = False
+
+            match.save()
+
+
+        
+        return Response(data=PositionMatchModelSerializer(match).data)
+
+
+class MatchListView(ListAPIView):
+    serializer_class = PositionMatchModelSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = ['matched']
+
+    def get_queryset(self):
+        current_user = self.request.user
+
+        if current_user.is_employer:
+            return Match.objects.filter(company__user=current_user)
+        else:
+            return Match.objects.filter(jobseeker__user=current_user)
 
 
 class CompanyProfileView(APIView):
@@ -52,7 +132,7 @@ class PositionListCreateView(ListCreateAPIView):
     queryset = Position.objects.all()
     permission_classes = [IsEmployerOrReadOnly]
     serializer_class = PositionSerializer
-    filterset_fields = ['company', 'position_occupation', 'id', 'position_occupation__category']
+    filterset_fields = ['company', 'position_occupation', 'id', 'position_occupation__category', 'accepted', 'denied']
 
     def create(self, request, *args, **kwargs):
         position_data = request.data

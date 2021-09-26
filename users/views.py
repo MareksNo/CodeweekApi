@@ -1,6 +1,5 @@
 from re import I
 from django.core import exceptions
-from django.http import QueryDict
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth import get_user_model
 
@@ -195,7 +194,7 @@ class JobSeekerProfileView(APIView):
         serializer = JobSeekerProfileSerializer(profile)
         return Response(serializer.data)
 
-
+    
 class JobOfferListCreateView(generics.ListCreateAPIView):
     queryset = JobOffer.objects.all()
     permission_classes = [IsJobSeekerOrReadOnly]
@@ -244,3 +243,4 @@ class JobOfferRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = JobOfferSerializer
     permission_classes = [IsJobOfferOwnerOrReadOnly]
     queryset = JobOffer.objects.all()
+
