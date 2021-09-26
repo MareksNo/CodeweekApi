@@ -84,7 +84,7 @@ class MatchView(APIView):
 class MatchListView(ListAPIView):
     serializer_class = PositionMatchModelSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = ['matched']
+    filterset_fields = ['matched', 'jobseeker_accepted', 'company_accepted']
 
     def get_queryset(self):
         current_user = self.request.user
