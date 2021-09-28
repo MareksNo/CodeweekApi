@@ -74,7 +74,6 @@ class MatchView(APIView):
         try:
             match.save()
         except IntegrityError:
-            print('lol')
             match = Match.objects.get(position=match.position, jobseeker=match.jobseeker, company=match.company)
 
         
