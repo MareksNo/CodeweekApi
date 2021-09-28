@@ -35,6 +35,7 @@ class MatchView(APIView):
 
         if user.is_employer:
             user_profile = CompanyProfile.objects.get(user=user)
+
             position = get_object_or_404(Position, company=user_profile, id=position_id)
             
             try:
@@ -47,9 +48,11 @@ class MatchView(APIView):
             except ValueError:
                 raise serializers.ValidationError({'detail': "Invalid jobseeker id provided"})
 
+
             match = get_object_or_404(Match, jobseeker=jobseeker, position=position, company=user_profile)
             
             match.company_accepted = accepted
+
 
 
         else:
@@ -63,11 +66,15 @@ class MatchView(APIView):
 
             match.jobseeker_accepted = accepted
 
-        match.matched = match.jobseeker_accepted and match.company_accepted
+        match.matched = False
+        if match.company_accepted and match.jobseeker_accepted:
+            match.matched = True
+        
 
         try:
             match.save()
         except IntegrityError:
+            print('lol')
             match = Match.objects.get(position=match.position, jobseeker=match.jobseeker, company=match.company)
 
         
