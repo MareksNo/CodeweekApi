@@ -1,5 +1,6 @@
 from django.core import exceptions
 from django.utils.datastructures import MultiValueDictKeyError
+from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions, status, serializers
@@ -49,19 +50,12 @@ class MatchView(APIView):
             match = get_object_or_404(Match, jobseeker=jobseeker, position=position, company=user_profile)
             
             match.company_accepted = accepted
-            
-            if match.company_accepted and match.jobseeker_accepted:
-                
-                match.matched = True
-            else:
-                match.matched = False
-            
-            match.save()
+
 
         else:
             user_profile = JobSeekerProfile.objects.get(user=user)
 
-            
+
             position = get_object_or_404(Position, id=position_id)
            
             match, created = Match.objects.get_or_create(position=position, jobseeker=user_profile, company=position.company)
@@ -69,13 +63,12 @@ class MatchView(APIView):
 
             match.jobseeker_accepted = accepted
 
-            if match.company_accepted == True and match.jobseeker_accepted == True:
-                match.matched = True
-            else:
-                match.matched = False
+        match.matched = match.jobseeker_accepted and match.company_accepted
 
+        try:
             match.save()
-
+        except IntegrityError:
+            match = Match.objects.get(position=match.position, jobseeker=match.jobseeker, company=match.company)
 
         
         return Response(data=PositionMatchModelSerializer(match).data)
@@ -165,7 +158,8 @@ class PositionListCreateView(ListCreateAPIView):
             position_languages=position_data.get('position_languages', list()),
             position_requirements=position_data.get('position_requirements', 'N/A'),
             price_range=position_data.get('price_range', 'N/A'),
-            contract_type=position_data.get('contract_type', 'N/A')
+            contract_type=position_data.get('contract_type', 'N/A'),
+            photo=position_data.get('photo', '')
 
         )
         

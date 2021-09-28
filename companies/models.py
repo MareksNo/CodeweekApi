@@ -58,8 +58,10 @@ class Position(models.Model):
     contract_type = models.TextField(max_length=1000)
     post_time = models.DateTimeField(auto_now_add=True)
 
+    photo = models.ImageField(upload_to='company_photos/', blank=True)
+
     def __str__(self):
-        return f'{self.company.company_name}: {self.position_occupation.title}'
+        return f'{self.company.company_name}: {self.position_occupation.title}' 
 
 
 
@@ -73,11 +75,14 @@ class Match(models.Model):
 
     matched = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ('position', 'jobseeker', 'company')
+
+    def __str__(self):
+        return f'Position id {self.position.id}: Jobseeker: {self.jobseeker.user.email}, Company {self.company.company_name}'
 
     def clean(self):
         if not self.company == self.position.company:
             raise ValidationError("Please make sure that the company profile matches the position")
         return super().clean()
-
-    def __str__(self):
-        return f'Position id {self.position.id}: Jobseeker: {self.jobseeker.user.email}, Company {self.company.company_name}'
+        

@@ -15,7 +15,7 @@ class PositionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Position
-        fields = ['id', 'company', 'position_occupation', 'position_info', 'position_tools', 'position_city', 'position_country', 'position_languages', 'position_requirements', 'price_range', 'contract_type', 'post_time']
+        fields = ['id', 'company', 'position_occupation', 'position_info', 'position_tools', 'position_city', 'position_country', 'position_languages', 'position_requirements', 'price_range', 'contract_type', 'photo', 'post_time']
         read_only_fields = (['company', 'post_time', 'id'])
 
 class PositionMatchSerializer(serializers.Serializer):
@@ -28,4 +28,3 @@ class PositionMatchModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Match
         fields = ['id', 'jobseeker', 'company', 'position', 'jobseeker_accepted', 'company_accepted', 'matched']
-        
