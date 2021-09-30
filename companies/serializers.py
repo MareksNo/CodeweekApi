@@ -11,12 +11,13 @@ class CompanyProfileSerializer(serializers.ModelSerializer):
         read_only_fields = (['id', 'user'])
 
 class PositionSerializer(serializers.ModelSerializer):
-
+    position_title = serializers.ReadOnlyField(source='position_occupation.title')
 
     class Meta:
         model = Position
-        fields = ['id', 'company', 'position_occupation', 'position_info', 'position_tools', 'position_city', 'position_country', 'position_languages', 'position_requirements', 'price_range', 'contract_type', 'photo', 'post_time']
-        read_only_fields = (['company', 'post_time', 'id'])
+        fields = ['id', 'company', 'position_occupation', 'position_title', 'position_info', 'position_tools', 'position_city', 'position_country', 'position_languages', 'position_requirements', 'price_range', 'contract_type', 'photo', 'post_time']
+        read_only_fields = (['company', 'post_time', 'id',])
+        
 
 class PositionMatchSerializer(serializers.Serializer):
     accepted = serializers.BooleanField(required=True)
