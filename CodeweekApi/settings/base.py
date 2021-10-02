@@ -14,6 +14,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = True
 
+print(os.getenv('troll'))
+
 # Application definition
 
 INSTALLED_APPS = [
