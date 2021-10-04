@@ -11,7 +11,7 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
 from .models import CompanyProfile, Position, Match
-from .serializers import CompanyProfileSerializer, PositionMatchModelSerializer, PositionSerializer, PositionMatchSerializer
+from .serializers import CompanyProfileSerializer, PositionMatchModelSerializer, PositionSerializer, PositionMatchSerializer, VerificationSerializer
 from .permissions import IsEmployerOrReadOnly, IsPositionOwnerOrReadOnly
 
 from users.models import JobSeekerProfile
@@ -95,11 +95,11 @@ class MatchListView(ListAPIView):
 
 
 class CompanyProfileView(APIView):
+
     parser_classes = [MultiPartParser, FormParser]
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def put(self, request, company_id=None):
-        print(request.data)
         data = {}
 
         try:
@@ -125,6 +125,31 @@ class CompanyProfileView(APIView):
         serializer = CompanyProfileSerializer(profile)
        
         return Response(serializer.data)
+
+class VerifyCompanyView(APIView):
+
+    def post(self, request):
+        current_user = request.user
+
+        if not current_user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        
+        serializer = VerificationSerializer(data=request.POST)
+
+        serializer.is_valid(raise_exception=True)
+
+        company_id = serializer.data['company_id']
+
+        company = get_object_or_404(CompanyProfile, id=company_id)
+
+        company.is_verified = serializer.data['verified']
+
+        company.save()
+
+        return Response(status=status.HTTP_200_OK, data=serializer.data)
+        
+        
 
 
 class PositionListCreateView(ListCreateAPIView):

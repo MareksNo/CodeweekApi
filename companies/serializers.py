@@ -7,8 +7,8 @@ class CompanyProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CompanyProfile
-        fields = ['id', 'user', 'company_name', 'position', 'phone_number', 'logo', 'background_photo', 'country', 'company_size', 'country', 'city', 'specialization', 'description', 'website_url']
-        read_only_fields = (['id', 'user'])
+        fields = ['id', 'user', 'company_name', 'position', 'phone_number', 'logo', 'background_photo', 'country', 'company_size', 'country', 'city', 'specialization', 'description', 'website_url', 'is_verified']
+        read_only_fields = (['id', 'user', 'is_verified'])
 
 class PositionSerializer(serializers.ModelSerializer):
     position_title = serializers.ReadOnlyField(source='position_occupation.title')
@@ -29,3 +29,7 @@ class PositionMatchModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Match
         fields = ['id', 'jobseeker', 'company', 'position', 'jobseeker_accepted', 'company_accepted', 'matched']
+
+class VerificationSerializer(serializers.Serializer):
+    company_id = serializers.IntegerField(required=True)
+    verified = serializers.BooleanField(required=True)

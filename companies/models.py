@@ -26,6 +26,8 @@ class CompanyProfile(models.Model):
     specialization = models.CharField(max_length=500, blank=True)
     website_url = models.CharField(max_length=200, blank=True, default='')
 
+    is_verified = models.BooleanField(max_length=200, blank=True, default=False)
+
     def __str__(self):
         return f'{self.company_name}\'s Company profile'
 
