@@ -15,6 +15,7 @@ from rest_framework.authtoken.models import Token
 
 from core.models import Occupation
 
+
 class CustomAccountManager(BaseUserManager):
     def create_user(self, email, password, **other_fields):
         if not email:
@@ -101,6 +102,26 @@ class JobSeekerProfile(models.Model):
                 instance.jobseeker_profile.save()
             except ObjectDoesNotExist:
                 JobSeekerProfile.objects.create(user=instance)
+
+
+# RATE_CHOICES = [
+#     (1, '1 stars'),
+#     (2, '2 stars'),
+#     (3, '3 stars'),
+#     (4, '4 stars'),
+#     (5, '5 stars')
+
+# ]
+
+# class Review(models.Model):
+#     company = models.ForeignKey(company_models.CompanyProfile, on_delete=models.CASCADE)
+#     jobseeker = models.ForeignKey(JobSeekerProfile, on_delete=models.CASCADE)
+#     review_time = models.DateTimeField(auto_now_add=True)
+#     text = models.TextField(max_length=3500 , blank=True)
+#     rating = models.PositiveSmallIntegerField(choices=RATE_CHOICES)
+
+#     def __str__(self):
+#         return self.company.company_name
 
 
 class JobOffer(models.Model):

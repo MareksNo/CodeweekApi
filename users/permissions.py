@@ -2,6 +2,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework import permissions
 
+from companies.models import CompanyProfile
+
 from .models import JobSeekerProfile
 
 class IsJobSeekerOrReadOnly(permissions.BasePermission):
@@ -39,3 +41,20 @@ class UserIsOwnerOrReadOnly(permissions.BasePermission):
             return True
 
         return obj.id == request.user.id
+
+
+# class IsVerifiedCompany(permissions.BasePermission):
+#     def has_permission(self, request, view):
+#         if request.method in permissions.SAFE_METHODS:
+#             return True
+
+#         if request.user.is_superuser:
+#             return True
+
+#         if request.user.is_employer:
+#             try:
+#                 company_profile = CompanyProfile.objects.get(user=request.user)
+#             except ObjectDoesNotExist:
+#                 return False
+            
+#             return company_profile.is_verified

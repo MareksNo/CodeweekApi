@@ -1,5 +1,5 @@
 from re import I
-from django.core import exceptions
+from django.core import exceptions  
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth import get_user_model
 
@@ -244,3 +244,19 @@ class JobOfferRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsJobOfferOwnerOrReadOnly]
     queryset = JobOffer.objects.all()
 
+
+# class RateUserView(APIView):
+#     permission_classes = [IsVerifiedCompany]
+
+#     def post(self, request, jobseeker_id):
+#         user = request.user
+
+#         jobseeker = generics.get_object_or_404(JobSeekerProfile, id=jobseeker_id)
+        
+#         serializer = ReviewSerializer(data=request.data)
+
+#         serializer.is_valid()
+
+#         # Add lookup for review, if exists, dont create and edit, else: create.
+
+        

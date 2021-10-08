@@ -93,3 +93,9 @@ class JobOfferSerializer(serializers.ModelSerializer):
         fields = ['id', 'user_profile', 'job_title', 'skills', 'knowledge', 'info', 'contract_type', 'post_time']
         read_only_fields = (['user_profile', 'post_time', 'id'])
 
+
+# class ReviewSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Review
+#         fields = ['id', 'company', 'jobseeker', 'text', 'rating', 'review_time']
+#         read_only_fields = (['review_time', 'id', 'company', 'jobseeker'])

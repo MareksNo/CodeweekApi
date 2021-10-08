@@ -63,7 +63,11 @@ class Position(models.Model):
     photo = models.ImageField(upload_to='company_photos/', blank=True)
 
     def __str__(self):
-        return f'{self.company.company_name}: {self.position_occupation.title}' 
+        if self.position_occupation:
+            occupation_title = self.position_occupation.title
+        else:
+            occupation_title = None
+        return f'{self.company.company_name}: {occupation_title}' 
 
 
 
